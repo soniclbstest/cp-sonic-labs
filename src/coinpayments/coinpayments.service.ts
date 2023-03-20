@@ -31,13 +31,13 @@ export class CoinpaymentsService {
         buyer_email: email,
         buyer_name: email,
         custom: "coin-hub-cp",
-        ipn_url: `https://coinbureau-hub-coinpayments-test-1.up.railway.app/coin-payments/coin-payment-webhook`
+        ipn_url: `https://cp-sonic-labs-production.up.railway.app/coin-payments/coin-payment-webhook`
         // ipn_url: `${this.configService.get<string>(
         //   'COIN_PAYMENT_BASE_URL',
         // )}/coin-payments/coin-payment-webhook`,
       })
 
-      
+
       .then((res) => {
         this.logger.warn(
           `${this.configService.get<string>(
