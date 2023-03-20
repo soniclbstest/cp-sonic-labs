@@ -8,7 +8,6 @@ import { ValidationPipe } from '@nestjs/common';
 
 const logtail = new Logtail('Yj1PuAEcBxwbZMxzpPiiojK8');
 
-
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     logger: WinstonModule.createLogger({
