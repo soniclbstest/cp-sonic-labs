@@ -11,6 +11,7 @@ import { Gift } from '../gift/entity/gift.entity';
 import { UserCoinReviewPoll } from '../user_coin_review_poll/entity/user_coin_review_polls.entity';
 import { UserVideoPoll } from '../user_video_poll/entity/user_video_poll.entity';
 import { UserRepository } from './user.repository';
+import { MembershipModule } from '../membership/membership.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { UserRepository } from './user.repository';
       UserCoinReviewPoll,
       UserVideoPoll,
     ]),
+    MembershipModule,
   ],
   controllers: [UserController],
   providers: [UserService, UserRepository],

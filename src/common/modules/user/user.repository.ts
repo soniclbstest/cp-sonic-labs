@@ -20,21 +20,32 @@ export class UserRepository {
     }
   }
 
-  findById(id: number): Promise<User> {
+  async findById(id: number): Promise<User> {
     try {
-      return this.userRepository.findOneBy({
-        id: id,
+      const user = await this.userRepository.findOneBy({
+        id,
       });
+      console.log(user);
+      return user;
     } catch (error) {
       throw new Error('Method not implemented.');
     }
   }
 
-  updateUserMembership(
-    id: number,
-    updateUserMembershipDto: UpdateUserMembershipDto,
-  ) {
+  async updateUserMembership(id: number, membership: Membership) {
     try {
+      const queryBuilder = this.userRepository.createQueryBuilder();
+      await queryBuilder
+        .update(User)
+        .set({
+          membership,
+        })
+        .where('id = :id', { id })
+        .setParameters({
+          new: true,
+          runValidators: true,
+        })
+        .execute();
       return this.userRepository.findOneBy({
         id: id,
       });

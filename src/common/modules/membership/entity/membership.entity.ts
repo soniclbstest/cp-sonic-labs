@@ -15,7 +15,7 @@ export class Membership {
   @PrimaryGeneratedColumn({ type: 'bigint' })
   id: number;
 
-  @Column()
+  @Column({ unique: true })
   name: string;
 
   @Column()
@@ -31,12 +31,8 @@ export class Membership {
   users: User[];
 
   @ManyToMany(() => Permission, (permission) => permission.memberships)
-  @JoinTable()
   permissions: Permission[];
 
-  @OneToMany(() => Payment, (payment) => payment.membership, {
-    cascade: true,
-  })
-  @JoinTable()
+  @OneToMany(() => Payment, (payment) => payment.membership)
   payments: Payment[];
 }

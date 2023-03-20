@@ -1,13 +1,17 @@
 import { Injectable } from '@nestjs/common';
+import { MembershipRepository } from '../membership/membership.repository';
 import { UpdateUserMembershipDto } from './dtos/update_user_membership.dto';
 import { User } from './entity/user.entity';
 import { UserRepository } from './user.repository';
 
 @Injectable()
 export class UserService {
-  constructor(private userRepository: UserRepository) {}
+  constructor(
+    private userRepository: UserRepository,
+    private memberRepository: MembershipRepository,
+  ) {}
 
-  findAll(): Promise<User[]> {
+  async findAll(): Promise<User[]> {
     try {
       return this.userRepository.findAll();
     } catch (error) {
@@ -15,7 +19,7 @@ export class UserService {
     }
   }
 
-  findById(id: number) {
+  async findById(id: number) {
     try {
       return this.userRepository.findById(id);
     } catch (error) {
@@ -23,15 +27,16 @@ export class UserService {
     }
   }
 
-  updateUserMembership(
+  async updateUserMembership(
     id: number,
     updateUserMembershipDto: UpdateUserMembershipDto,
   ) {
     try {
-      return this.userRepository.updateUserMembership(
-        id,
-        updateUserMembershipDto,
+      const membership = await this.memberRepository.findById(
+        updateUserMembershipDto.membershipId,
       );
+      console.log(membership);
+      return this.userRepository.updateUserMembership(id, membership);
     } catch (error) {
       console.log(error);
     }

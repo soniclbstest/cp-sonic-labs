@@ -32,9 +32,6 @@ export class CoinpaymentsService {
         buyer_name: email,
         custom: "coin-hub-cp",
         ipn_url: `https://cp-sonic-labs-production.up.railway.app/coin-payments/coin-payment-webhook`
-        // ipn_url: `${this.configService.get<string>(
-        //   'COIN_PAYMENT_BASE_URL',
-        // )}/coin-payments/coin-payment-webhook`,
       })
 
 
@@ -45,6 +42,7 @@ export class CoinpaymentsService {
           )}/coin-payments/coin-payment-webhook`,
         );
         console.log(res)
+        //save payment
         return res;
       })
       .catch((error) => {
@@ -62,6 +60,9 @@ export class CoinpaymentsService {
     this.logger.log(`IPN callback data ${callBackData}`);
     if (callBackData.status === Status.PENDING) {
       this.logger.log(`pending ${callBackData.status} ${Status.PENDING}`);
+      //find the payment object by the userId
+      //update the payment status according to the user
+
     }
     if (callBackData.status === Status.FUNDSSENT) {
       this.logger.log(`fund sent ${callBackData.status} ${Status.PENDING}`);
