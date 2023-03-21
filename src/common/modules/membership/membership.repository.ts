@@ -9,7 +9,7 @@ export class MembershipRepository {
   constructor(
     @InjectRepository(Membership)
     private membershipRepository: Repository<Membership>,
-  ) {}
+  ) { }
 
   async createMembership(
     createMembershipDto: CreateMembershipDto,
@@ -25,6 +25,7 @@ export class MembershipRepository {
       console.log(newMembership);
       return this.membershipRepository.save(newMembership);
     } catch (error) {
+      console.log(error)
       throw new Error('Method not implemented.');
     }
   }

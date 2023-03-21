@@ -60,7 +60,7 @@ export class CoinpaymentsService {
         buyer_email: user.email,
         buyer_name: user.username,
         custom: 'coinbureau-hub',
-        ipn_url: `https://cp-sonic-labs-production.up.railway.app/coin-payments/coin-payment-webhook`,
+        ipn_url: `https://cp-sonic-labs-production.up.railway.app/api/coin-payments/coin-payment-webhook`,
       })
       .then((res) => {
         //save payment
