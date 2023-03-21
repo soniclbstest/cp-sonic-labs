@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { ForbiddenException, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import Coinpayments from 'coinpayments';
 import { CreateCoinPaymentDTO } from './dto/coinpayment.dto';
@@ -60,9 +60,10 @@ export class CoinpaymentsService {
         buyer_email: user.email,
         buyer_name: user.username,
         custom: 'coinbureau-hub',
-        ipn_url: `https://cp-sonic-labs-production.up.railway.app/api/coin-payments/coin-payment-webhook`,
+        // ipn_url: `https://cp-sonic-labs-production.up.railway.app/api/coin-payments/coin-payment-webhook`,
+        ipn_url: `${this.configService.get<string>("COIN_PAYMENT_BASE_URL")}/coin-payments/coin-payment-webhook`
       })
-      
+
       .then((res) => {
         //save payment
         this.paymentRepository.create({
@@ -100,10 +101,9 @@ export class CoinpaymentsService {
     if (!payment) {
       throw new Error(`Payment Not Found`);
     }
+    //pending
     if (callBackData.status === StatusNumber.PENDING) {
       this.logger.log(`pending ${callBackData.status} ${StatusNumber.PENDING}`);
-      //find the payment by the txn_id
-
       //update the payment status
       this.paymentRepository
         .updatePayment(payment, Status.PENDING)
@@ -114,16 +114,17 @@ export class CoinpaymentsService {
         })
         .catch((error) => {
           this.logger.error(
-            `Payment status updating error ${new Date()} ~~~ ${
-              callBackData.txn_id
+            `Payment status updating error ${new Date()} ~~~ ${callBackData.txn_id
             } ~~~ ${error}`,
           );
         });
     }
+    //funds sent
     if (callBackData.status === StatusNumber.FUNDSSENT) {
       this.logger.log(
         `fund sent ${callBackData.status} ${StatusNumber.FUNDSSENT}`,
       );
+      //update the payment status
       this.paymentRepository
         .updatePayment(payment, Status.FUNDS_SENT)
         .then((res) => {
@@ -133,12 +134,12 @@ export class CoinpaymentsService {
         })
         .catch((error) => {
           this.logger.error(
-            `Payment status updating error ${new Date()} ~~~ ${
-              callBackData.txn_id
+            `Payment status updating error ${new Date()} ~~~ ${callBackData.txn_id
             } ~~~ ${error}`,
           );
         });
     }
+    //completed
     if (
       callBackData.status === StatusNumber.COMPLETED ||
       callBackData.status === StatusNumber.COMPLETED_2
@@ -146,21 +147,26 @@ export class CoinpaymentsService {
       this.logger.log(
         `Completed ${callBackData.status} ${StatusNumber.COMPLETED}`,
       );
+      //update the payment status
       this.paymentRepository
         .updatePayment(payment, Status.COMPLETED)
         .then((res) => {
           this.logger.log(
             `Payment status updated ${new Date()} ~~~ ${res.payment_id} `,
           );
+
+          //upddate the membership status
+          // this.userRepository.updateUserMembership()
         })
         .catch((error) => {
           this.logger.error(
-            `Payment status updating error ${new Date()} ~~~ ${
-              callBackData.txn_id
+            `Payment status updating error ${new Date()} ~~~ ${callBackData.txn_id
             } ~~~ ${error}`,
           );
         });
     }
+
+    //canceled
     if (
       Math.sign(+callBackData.status) === +StatusNumber.CANCELED ||
       Number.isNaN(Math.sign(+callBackData.status))
@@ -168,6 +174,7 @@ export class CoinpaymentsService {
       this.logger.log(
         `Canceled ${callBackData.status} ${StatusNumber.CANCELED}`,
       );
+      //update the payment status
       this.paymentRepository
         .updatePayment(payment, Status.CANCELLED)
         .then((res) => {
@@ -177,11 +184,15 @@ export class CoinpaymentsService {
         })
         .catch((error) => {
           this.logger.error(
-            `Payment status updating error ${new Date()} ~~~ ${
-              callBackData.txn_id
+            `Payment status updating error ${new Date()} ~~~ ${callBackData.txn_id
             } ~~~ ${error}`,
           );
         });
-    } else return;
+    } else {
+      throw new ForbiddenException({
+        message: "Nothing happened",
+        status: 403
+      })
+    };
   }
 }
