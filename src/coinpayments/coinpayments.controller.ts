@@ -32,31 +32,15 @@ export class CoinpaymentsController {
   @UseInterceptors(FileInterceptor('file'))
   async listenToWebhook(
     @Body() callBackData: any,
+    @Query() userId: number | string,
   ) {
-    this.logger.log(`${new Date()} listenToWebhook called `);
+    this.logger.log(
+      `${new Date()} listenToWebhook called ~~~ ${userId} ~~~ ${typeof userId} ~~~~ ${callBackData.txn_id
+      }`,
+    );
     return await this.coinPaymentsService.handleCallBackdetails(
       callBackData,
+      userId,
     );
-  }
-
-  //testing controller
-  @Get()
-  async get1() {
-    return {
-      status: "ok",
-      function: "get1"
-    }
-  }
-
-  @Get('coin-payment-webhook')
-  async listenToWebhook_get(
-    @Body() callBackData: any,
-  ) {
-    this.logger.log(`${new Date()} listenToWebhook called `);
-    this.logger.log(callBackData);
-    return {
-      status: "ok",
-      function: "listenToWebhook_get"
-    }
   }
 }

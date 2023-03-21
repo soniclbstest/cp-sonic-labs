@@ -61,7 +61,7 @@ export class CoinpaymentsService {
         buyer_name: user.username,
         custom: 'coinbureau-hub',
         // ipn_url: `https://cp-sonic-labs-production.up.railway.app/api/coin-payments/coin-payment-webhook`,
-        ipn_url: `${this.configService.get<string>("COIN_PAYMENT_BASE_URL")}/coin-payments/coin-payment-webhook`
+        ipn_url: `${this.configService.get<string>("COIN_PAYMENT_BASE_URL")}/coin-payments/coin-payment-webhook?userId=${userId}`
       })
 
       .then((res) => {
@@ -92,8 +92,14 @@ export class CoinpaymentsService {
       });
   }
 
-  async handleCallBackdetails(callBackData: CoinPaymentCallBackResponse) {
+  async handleCallBackdetails(callBackData: CoinPaymentCallBackResponse,userId:number |string) {
     this.logger.log(`IPN callback data ${callBackData}`);
+    const user = await this.userRepository.findById(+userId);
+
+    if (!user) {
+      this.logger.error(`membrtship not found ${userId}`);
+      throw new Error(`User not found`);
+    }
     const payment = await this.paymentRepository.findOneByPaymentId(
       callBackData.txn_id,
     );
@@ -155,7 +161,7 @@ export class CoinpaymentsService {
             `Payment status updated ${new Date()} ~~~ ${res.payment_id} `,
           );
 
-          //upddate the membership status
+          //update the membership status
           // this.userRepository.updateUserMembership()
         })
         .catch((error) => {
