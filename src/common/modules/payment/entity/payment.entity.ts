@@ -8,7 +8,7 @@ import {
   JoinTable,
   OneToMany,
 } from 'typeorm';
-import { PaymentMethod, PaymentType } from '../types/payment.types';
+import { PaymentMethod, PaymentType, Status } from '../types/payment.types';
 
 @Entity({ name: 'payments' })
 export class Payment {
@@ -41,6 +41,6 @@ export class Payment {
   @Column()
   create_date: string;
 
-  @Column({ default: true })
-  status: boolean;
+  @Column({ default: null })
+  status: Status;
 }

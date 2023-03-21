@@ -5,10 +5,12 @@ import { Membership } from '../membership/entity/membership.entity';
 import { Payment } from './entity/payment.entity';
 import { PaymentController } from './payment.controller';
 import { PaymentService } from './payment.service';
+import { PaymentRepository } from './payment.repository';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Payment, Membership, User])],
   controllers: [PaymentController],
-  providers: [PaymentService],
+  providers: [PaymentService, PaymentRepository],
+  exports: [PaymentService, PaymentRepository]
 })
-export class PaymentModule {}
+export class PaymentModule { }

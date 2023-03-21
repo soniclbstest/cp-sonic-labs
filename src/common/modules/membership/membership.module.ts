@@ -10,8 +10,9 @@ import { MembershipService } from './membership.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Membership, User, Permission, Payment])],
-  exports: [MembershipRepository],
   controllers: [MembershipController],
   providers: [MembershipService, MembershipRepository],
+  exports: [MembershipRepository,MembershipService],
+
 })
 export class MembershipModule {}

@@ -1,16 +1,9 @@
-export enum Status {
+export enum StatusNumber {
     PENDING = "0",
     FUNDSSENT = "1",
     COMPLETED = "100",
     COMPLETED_2 = "2",
     CANCELED = "-1",
-}
-
-export enum StatusText {
-    PENDING = "PENDING",
-    FUNDSSENT = "FUNDSSENT",
-    COMPLETED = "COMPLETED",
-    CANCELED = "CANCELED",
 }
 
 export enum CurrencyOptions {
@@ -56,7 +49,7 @@ export interface CoinPaymentCallBackResponse {
     merchant: string
     received_amount: string | number
     received_confirms: string | number
-    status: string
+    status: StatusNumber
     status_text: string
     txn_id: string
 }

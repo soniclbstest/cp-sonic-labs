@@ -1,7 +1,7 @@
 import { IsBoolean, IsNotEmpty, IsNumber, IsString, isNotEmpty } from "class-validator";
 import { Membership } from "../../membership/entity/membership.entity";
 import { User } from "../../user/entity/user.entity";
-import { PaymentMethod, PaymentType } from "../types/payment.types";
+import { PaymentMethod, PaymentType, Status } from "../types/payment.types";
 
 export class CreatePaymentDto {
 
@@ -17,7 +17,7 @@ export class CreatePaymentDto {
 
     @IsNotEmpty({ message: 'Please add amount' })
     @IsNumber()
-    amount: number
+    amount: number 
 
     @IsString()
     @IsNotEmpty({ message: 'Please add payment_method' })
@@ -37,7 +37,7 @@ export class CreatePaymentDto {
 
     @IsBoolean()
     @IsNotEmpty({ message: 'Please add status' })
-    status:boolean
+    status:Status
 
 
 }

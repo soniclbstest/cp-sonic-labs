@@ -4,10 +4,12 @@ import { Repository } from 'typeorm';
 import { Payment } from './entity/payment.entity';
 import { UpdatePaymentStatusDto } from './dtos/update_payment.dto';
 import { CreatePaymentDto } from './dtos/create_payment.dto';
+import { Status } from './types/payment.types';
+import { StatusNumber } from 'src/coinpayments/types/coinpayment.types';
 
 @Injectable()
 export class PaymentRepository {
-    
+
     constructor(
         @InjectRepository(Payment) private paymentRepository: Repository<Payment>,
     ) { }
@@ -38,11 +40,21 @@ export class PaymentRepository {
             throw new Error('Method not implemented.');
         }
     }
-    updatePaymentStatus(updatePaymentStatus: UpdatePaymentStatusDto) {
+    findOneByPaymentId(id: string): Promise<Payment> {
         try {
             return this.paymentRepository.findOneBy({
-                id: +updatePaymentStatus.txn_id, //Todo
-            });
+                payment_id: id
+            })
+        } catch (error) {
+            throw new Error('Method not implemented.')
+        }
+    }
+    updatePayment(payment: Payment, status: Status): Promise<Payment> {
+        try {
+            payment.status = status
+            return this.paymentRepository.save(
+                payment
+            )
         } catch (error) {
             throw new Error('Method not implemented.');
         }

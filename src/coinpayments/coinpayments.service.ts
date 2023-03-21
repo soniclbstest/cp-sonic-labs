@@ -3,11 +3,27 @@ import { ConfigService } from '@nestjs/config';
 import Coinpayments from 'coinpayments';
 import { CreateCoinPaymentDTO } from './dto/coinpayment.dto';
 import { CoinpaymentsCreateTransactionResponse } from 'coinpayments/dist/types/response';
-import { CoinPaymentCallBackResponse, Status } from './types/coinpayment.types';
+import {
+  CoinPaymentCallBackResponse,
+  StatusNumber,
+} from './types/coinpayment.types';
+import { PaymentRepository } from 'src/common/modules/payment/payment.repository';
+import {
+  PaymentMethod,
+  PaymentType,
+  Status,
+} from 'src/common/modules/payment/types/payment.types';
+import { UserRepository } from 'src/common/modules/user/user.repository';
+import { MembershipRepository } from 'src/common/modules/membership/membership.repository';
 
 @Injectable()
 export class CoinpaymentsService {
-  constructor(private configService: ConfigService) {
+  constructor(
+    private configService: ConfigService,
+    private readonly paymentRepository: PaymentRepository,
+    private readonly userRepository: UserRepository,
+    private readonly membershipRepository: MembershipRepository,
+  ) {
     this.client = new Coinpayments({
       key: this.configService.get<string>('COIN_PAYMENT_KEY'),
       secret: this.configService.get<string>('COIN_PAYMENT_SK'),
@@ -21,69 +37,150 @@ export class CoinpaymentsService {
   async createCoinPayment(
     createCoinPaymentDTO: CreateCoinPaymentDTO,
   ): Promise<CoinpaymentsCreateTransactionResponse> {
-    const { amount, currency, email } = createCoinPaymentDTO;
-    this.logger.log(amount);
+    const { amount, currency, email, userId, membershipId } =
+      createCoinPaymentDTO;
+    //find the user
+    const user = await this.userRepository.findById(userId);
+
+    if (!user) {
+      this.logger.error(`membrtship not found ${userId}`);
+      throw new Error(`User not found`);
+    }
+    const membership = await this.membershipRepository.findById(membershipId);
+    if (!membership) {
+      this.logger.error(`membrtship not found ${membershipId}`);
+      throw new Error(`Membership not found`);
+    }
+
     return await this.client
       .createTransaction({
         currency1: 'USD',
         currency2: currency, //BTC | ETH | LTCT
         amount: amount,
-        buyer_email: email,
-        buyer_name: email,
-        custom: "coin-hub-cp",
-        ipn_url: `https://cp-sonic-labs-production.up.railway.app/coin-payments/coin-payment-webhook`
+        buyer_email: user.email,
+        buyer_name: user.username,
+        custom: 'coinbureau-hub',
+        ipn_url: `https://cp-sonic-labs-production.up.railway.app/coin-payments/coin-payment-webhook`,
       })
-
-
       .then((res) => {
-        this.logger.warn(
-          `${this.configService.get<string>(
-            'COIN_PAYMENT_BASE_URL',
-          )}/coin-payments/coin-payment-webhook`,
-        );
-        console.log(res)
         //save payment
+        this.paymentRepository.create({
+          user: user,
+          membership: membership,
+          payment_id: res.txn_id,
+          amount: +res.amount,
+          payment_method: PaymentMethod.CRYPTO,
+          payment_type: PaymentType.YEARLY,
+          expire_date: '',
+          create_date: new Date().toString(),
+          status: Status.PENDING,
+        });
+
+        this.logger.log(
+          `payment created ${new Date()} ${user.id} ${res.txn_id} ${email}`,
+        );
         return res;
       })
       .catch((error) => {
         this.logger.error(
           `coin payment creation error email=${email} ${error}`,
         );
-        console.log(error)
+        console.log(error);
         return error;
       });
   }
 
-  async handleCallBackdetails(
-    callBackData: any,
-  ) {
+  async handleCallBackdetails(callBackData: CoinPaymentCallBackResponse) {
     this.logger.log(`IPN callback data ${callBackData}`);
-    if (callBackData.status === Status.PENDING) {
-      this.logger.log(`pending ${callBackData.status} ${Status.PENDING}`);
-      //find the payment object by the userId
-      //update the payment status according to the user
+    const payment = await this.paymentRepository.findOneByPaymentId(
+      callBackData.txn_id,
+    );
+    //check payment
+    if (!payment) {
+      throw new Error(`Payment Not Found`);
+    }
+    if (callBackData.status === StatusNumber.PENDING) {
+      this.logger.log(`pending ${callBackData.status} ${StatusNumber.PENDING}`);
+      //find the payment by the txn_id
 
+      //update the payment status
+      this.paymentRepository
+        .updatePayment(payment, Status.PENDING)
+        .then((res) => {
+          this.logger.log(
+            `Payment status updated ${new Date()} ~~~ ${res.payment_id} `,
+          );
+        })
+        .catch((error) => {
+          this.logger.error(
+            `Payment status updating error ${new Date()} ~~~ ${
+              callBackData.txn_id
+            } ~~~ ${error}`,
+          );
+        });
     }
-    if (callBackData.status === Status.FUNDSSENT) {
-      this.logger.log(`fund sent ${callBackData.status} ${Status.PENDING}`);
+    if (callBackData.status === StatusNumber.FUNDSSENT) {
+      this.logger.log(
+        `fund sent ${callBackData.status} ${StatusNumber.FUNDSSENT}`,
+      );
+      this.paymentRepository
+        .updatePayment(payment, Status.FUNDS_SENT)
+        .then((res) => {
+          this.logger.log(
+            `Payment status updated ${new Date()} ~~~ ${res.payment_id} `,
+          );
+        })
+        .catch((error) => {
+          this.logger.error(
+            `Payment status updating error ${new Date()} ~~~ ${
+              callBackData.txn_id
+            } ~~~ ${error}`,
+          );
+        });
     }
     if (
-      callBackData.status === Status.COMPLETED ||
-      callBackData.status === Status.COMPLETED_2
+      callBackData.status === StatusNumber.COMPLETED ||
+      callBackData.status === StatusNumber.COMPLETED_2
     ) {
-      this.logger.log(`Completed ${callBackData.status} ${Status.PENDING}`);
+      this.logger.log(
+        `Completed ${callBackData.status} ${StatusNumber.COMPLETED}`,
+      );
+      this.paymentRepository
+        .updatePayment(payment, Status.COMPLETED)
+        .then((res) => {
+          this.logger.log(
+            `Payment status updated ${new Date()} ~~~ ${res.payment_id} `,
+          );
+        })
+        .catch((error) => {
+          this.logger.error(
+            `Payment status updating error ${new Date()} ~~~ ${
+              callBackData.txn_id
+            } ~~~ ${error}`,
+          );
+        });
     }
     if (
-      callBackData.status === Status.COMPLETED ||
-      callBackData.status === Status.COMPLETED_2
-    ) {
-      this.logger.log(`Completed ${callBackData.status} ${Status.PENDING}`);
-    }
-    if (
-      Math.sign(+callBackData.status) === +Status.CANCELED ||
+      Math.sign(+callBackData.status) === +StatusNumber.CANCELED ||
       Number.isNaN(Math.sign(+callBackData.status))
     ) {
-      this.logger.log(`Canceled ${callBackData.status} ${Status.PENDING}`);
+      this.logger.log(
+        `Canceled ${callBackData.status} ${StatusNumber.CANCELED}`,
+      );
+      this.paymentRepository
+        .updatePayment(payment, Status.CANCELLED)
+        .then((res) => {
+          this.logger.log(
+            `Payment status updated ${new Date()} ~~~ ${res.payment_id} `,
+          );
+        })
+        .catch((error) => {
+          this.logger.error(
+            `Payment status updating error ${new Date()} ~~~ ${
+              callBackData.txn_id
+            } ~~~ ${error}`,
+          );
+        });
     } else return;
   }
 }
