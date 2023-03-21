@@ -41,6 +41,6 @@ export class Payment {
   @Column()
   create_date: string;
 
-  @Column({ default: null })
+  @Column({ default: Status.PENDING })
   status: Status;
 }
