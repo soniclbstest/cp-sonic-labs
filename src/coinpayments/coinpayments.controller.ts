@@ -12,7 +12,7 @@ import { CreateCoinPaymentDTO } from './dto/coinpayment.dto';
 import { CoinpaymentsCreateTransactionResponse } from 'coinpayments/dist/types/response';
 import { FileInterceptor } from '@nestjs/platform-express';
 
-@Controller('coin-payments')
+@Controller('api/coin-payments')
 export class CoinpaymentsController {
   constructor(private readonly coinPaymentsService: CoinpaymentsService) { }
   private readonly logger = new Logger(`coin-payment-controller`);
@@ -29,7 +29,7 @@ export class CoinpaymentsController {
 
   //listen to the IPN url
   @Post('coin-payment-webhook')
-  // @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(FileInterceptor('file'))
   async listenToWebhook(
     @Body() callBackData: any,
   ) {
