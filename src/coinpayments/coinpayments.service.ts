@@ -15,6 +15,7 @@ import {
 } from 'src/common/modules/payment/types/payment.types';
 import { UserRepository } from 'src/common/modules/user/user.repository';
 import { MembershipRepository } from 'src/common/modules/membership/membership.repository';
+import { HandleCoinPaymentDto } from './dto/handleCoinPayment.dto';
 
 @Injectable()
 export class CoinpaymentsService {
@@ -43,7 +44,7 @@ export class CoinpaymentsService {
     const user = await this.userRepository.findById(userId);
 
     if (!user) {
-      this.logger.error(`membrtship not found ${userId}`);
+      this.logger.error(`user not found ${userId}`);
       throw new Error(`User not found`);
     }
     const membership = await this.membershipRepository.findById(membershipId);
@@ -61,7 +62,7 @@ export class CoinpaymentsService {
         buyer_name: user.username,
         custom: 'coinbureau-hub',
         // ipn_url: `https://cp-sonic-labs-production.up.railway.app/api/coin-payments/coin-payment-webhook`,
-        ipn_url: `${this.configService.get<string>("COIN_PAYMENT_BASE_URL")}/coin-payments/coin-payment-webhook?userId=${userId}`
+        ipn_url: `${this.configService.get<string>("COIN_PAYMENT_BASE_URL")}/coin-payments/coin-payment-webhook?userId=${userId}&membershipId=${membershipId}`
       })
 
       .then((res) => {
@@ -92,12 +93,13 @@ export class CoinpaymentsService {
       });
   }
 
-  async handleCallBackdetails(callBackData: CoinPaymentCallBackResponse) {
+  async handleCallBackdetails(callBackData: CoinPaymentCallBackResponse,queryData:HandleCoinPaymentDto) {
+    // const {userId,membershipId}=queryData
     this.logger.log(`IPN callback data ${callBackData}`);
     // const user = await this.userRepository.findById(+userId);
 
     // if (!user) {
-    //   this.logger.error(`membrtship not found ${userId}`);
+    //   this.logger.error(`user not found ${userId}`);
     //   throw new Error(`User not found`);
     // }
     const payment = await this.paymentRepository.findOneByPaymentId(
@@ -162,7 +164,7 @@ export class CoinpaymentsService {
           );
 
           //update the membership status
-          // this.userRepository.updateUserMembership()
+          // this.userRepository.updateUserMembership(+userId,member)
         })
         .catch((error) => {
           this.logger.error(

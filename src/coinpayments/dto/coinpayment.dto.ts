@@ -25,6 +25,4 @@ export class CreateCoinPaymentDTO {
     @IsNotEmpty({ message: 'Please add memberships' })
     membershipId: number
 
-
-
 }

@@ -11,6 +11,7 @@ import { CoinpaymentsService } from './coinpayments.service';
 import { CreateCoinPaymentDTO } from './dto/coinpayment.dto';
 import { CoinpaymentsCreateTransactionResponse } from 'coinpayments/dist/types/response';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { HandleCoinPaymentDto } from './dto/handleCoinPayment.dto';
 
 @Controller('api/coin-payments')
 export class CoinpaymentsController {
@@ -32,16 +33,15 @@ export class CoinpaymentsController {
   @UseInterceptors(FileInterceptor('file'))
   async listenToWebhook(
     @Body() callBackData: any,
-    @Query() userId: number | string,
+    @Query() queryData: HandleCoinPaymentDto,
   ) {
     this.logger.log(
-      `${new Date()} listenToWebhook called ~~~ ${userId} ~~~ ${typeof userId} ~~~~ ${callBackData.txn_id
-      }`,
+      `${new Date()} listenToWebhook called ~~~ ${queryData.userId} ~~~ ${typeof queryData.userId} ~~~~ ${queryData.membershipId} ~~~ ${callBackData.txn_id}`,
     );
-    console.log(userId, "userId___")
+    console.log(queryData, "___queryData")
     return await this.coinPaymentsService.handleCallBackdetails(
       callBackData,
-      // userId,
+      queryData,
     );
   }
 }
