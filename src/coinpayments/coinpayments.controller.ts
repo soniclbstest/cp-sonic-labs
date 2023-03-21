@@ -38,9 +38,10 @@ export class CoinpaymentsController {
       `${new Date()} listenToWebhook called ~~~ ${userId} ~~~ ${typeof userId} ~~~~ ${callBackData.txn_id
       }`,
     );
+    console.log(userId, "userId___")
     return await this.coinPaymentsService.handleCallBackdetails(
       callBackData,
-      userId,
+      // userId,
     );
   }
 }

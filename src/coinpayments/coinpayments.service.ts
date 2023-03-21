@@ -92,14 +92,14 @@ export class CoinpaymentsService {
       });
   }
 
-  async handleCallBackdetails(callBackData: CoinPaymentCallBackResponse,userId:number |string) {
+  async handleCallBackdetails(callBackData: CoinPaymentCallBackResponse) {
     this.logger.log(`IPN callback data ${callBackData}`);
-    const user = await this.userRepository.findById(+userId);
+    // const user = await this.userRepository.findById(+userId);
 
-    if (!user) {
-      this.logger.error(`membrtship not found ${userId}`);
-      throw new Error(`User not found`);
-    }
+    // if (!user) {
+    //   this.logger.error(`membrtship not found ${userId}`);
+    //   throw new Error(`User not found`);
+    // }
     const payment = await this.paymentRepository.findOneByPaymentId(
       callBackData.txn_id,
     );
