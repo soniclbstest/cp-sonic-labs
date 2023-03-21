@@ -10,7 +10,6 @@ export class MembershipController {
   create(@Body() createMembershipDto: CreateMembershipDto) {
     return this.membershipService.create(createMembershipDto);
   }
-
   @Get(':id')
   findById(@Param('id') id: string) {
     return this.membershipService.findById(+id);
