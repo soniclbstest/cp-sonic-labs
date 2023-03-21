@@ -196,8 +196,7 @@ export class CoinpaymentsService {
         })
         .catch((error) => {
           this.logger.error(
-            `Payment status updating error ${new Date()} ~~~ ${callBackData.txn_id
-            } ~~~ ${error}`,
+            `Payment status updating error ${new Date()} ~~~ ${callBackData.txn_id} ~~~ ${error}`,
           );
         });
     } else {
