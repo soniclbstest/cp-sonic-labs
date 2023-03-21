@@ -62,6 +62,7 @@ export class CoinpaymentsService {
         custom: 'coinbureau-hub',
         ipn_url: `https://cp-sonic-labs-production.up.railway.app/api/coin-payments/coin-payment-webhook`,
       })
+      
       .then((res) => {
         //save payment
         this.paymentRepository.create({
