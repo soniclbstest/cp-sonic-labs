@@ -61,10 +61,8 @@ export class CoinpaymentsService {
         buyer_email: user.email,
         buyer_name: user.username,
         custom: 'coinbureau-hub',
-        // ipn_url: `https://cp-sonic-labs-production.up.railway.app/api/coin-payments/coin-payment-webhook`,
         ipn_url: `${this.configService.get<string>("COIN_PAYMENT_BASE_URL")}/coin-payments/coin-payment-webhook?userId=${userId}&membershipId=${membershipId}`
       })
-
       .then((res) => {
         //save payment
         this.paymentRepository.create({
@@ -93,21 +91,26 @@ export class CoinpaymentsService {
       });
   }
 
-  async handleCallBackdetails(callBackData: CoinPaymentCallBackResponse,queryData:HandleCoinPaymentDto) {
-    // const {userId,membershipId}=queryData
+  async handleCallBackdetails(callBackData: CoinPaymentCallBackResponse, queryData: HandleCoinPaymentDto) {
+    const { userId, membershipId } = queryData
     this.logger.log(`IPN callback data ${callBackData}`);
-    // const user = await this.userRepository.findById(+userId);
+    const user = await this.userRepository.findById(+userId);
 
-    // if (!user) {
-    //   this.logger.error(`user not found ${userId}`);
-    //   throw new Error(`User not found`);
-    // }
+    if (!user) {
+      this.logger.error(`user not found ${userId}`);
+      throw new Error(`User not found`);
+    }
     const payment = await this.paymentRepository.findOneByPaymentId(
       callBackData.txn_id,
     );
     //check payment
     if (!payment) {
       throw new Error(`Payment Not Found`);
+    }
+    const membership = await this.membershipRepository.findById(+membershipId);
+    if (!membership) {
+      this.logger.error(`membrtship not found ${membershipId}`);
+      throw new Error(`Membership not found`);
     }
     //pending
     if (callBackData.status === StatusNumber.PENDING) {
@@ -162,9 +165,10 @@ export class CoinpaymentsService {
           this.logger.log(
             `Payment status updated ${new Date()} ~~~ ${res.payment_id} `,
           );
-
           //update the membership status
-          // this.userRepository.updateUserMembership(+userId,member)
+          this.userRepository.updateUserMembership(+userId, membership).then((res) => {
+            this.logger.log(`user membership status updated ${userId} ${payment.id} ${membership.id}`)
+          })
         })
         .catch((error) => {
           this.logger.error(

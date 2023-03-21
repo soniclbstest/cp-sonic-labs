@@ -38,7 +38,6 @@ export class CoinpaymentsController {
     this.logger.log(
       `${new Date()} listenToWebhook called ~~~ ${queryData.userId} ~~~ ${typeof queryData.userId} ~~~~ ${queryData.membershipId} ~~~ ${callBackData.txn_id}`,
     );
-    console.log(queryData, "___queryData")
     return await this.coinPaymentsService.handleCallBackdetails(
       callBackData,
       queryData,
