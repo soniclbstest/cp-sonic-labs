@@ -75,11 +75,15 @@ export class CoinpaymentsService {
           expire_date: '',
           create_date: new Date().toString(),
           status: Status.PENDING,
-        });
+        }).then((res)=>{
+          this.logger.log(
+            `payment created ${new Date()} ${user.id} ${res.payment_id} ${email}`,
+          );
+        }).catch((error)=>{
+          throw new Error(`Error when saving the payment ${error} ${userId}`)
+        })
 
-        this.logger.log(
-          `payment created ${new Date()} ${user.id} ${res.txn_id} ${email}`,
-        );
+
         return res;
       })
       .catch((error) => {
