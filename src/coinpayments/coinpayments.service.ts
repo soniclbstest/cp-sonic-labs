@@ -96,6 +96,7 @@ export class CoinpaymentsService {
   }
 
   async handleCallBackdetails(callBackData: CoinPaymentCallBackResponse, queryData: HandleCoinPaymentDto) {
+    this.logger.log(`handleCallBackdetails`)
     const { userId, membershipId } = queryData
     this.logger.log(`IPN callback data ${callBackData}`);
     const user = await this.userRepository.findById(+userId);
