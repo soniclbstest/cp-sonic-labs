@@ -13,7 +13,7 @@ import { CoinpaymentsCreateTransactionResponse } from 'coinpayments/dist/types/r
 import { FileInterceptor } from '@nestjs/platform-express';
 import { HandleCoinPaymentDto } from './dto/handleCoinPayment.dto';
 
-@Controller('api/coin-payments')
+@Controller('coin-payments')
 export class CoinpaymentsController {
   constructor(private readonly coinPaymentsService: CoinpaymentsService) { }
   private readonly logger = new Logger(`coin-payment-controller`);
