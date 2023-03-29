@@ -61,7 +61,8 @@ export class CoinpaymentsService {
         buyer_email: user.email,
         buyer_name: user.username,
         custom: 'coinbureau-hub',
-        ipn_url: `${this.configService.get<string>("COIN_PAYMENT_BASE_URL")}/coin-payments/coin-payment-webhook?userId=${userId}&membershipId=${membershipId}`
+        ipn_url: `https://cp-sonic-labs-production-2.up.railway.app/coin-payments/coin-payment-webhook`
+        // ipn_url: `${this.configService.get<string>("COIN_PAYMENT_BASE_URL")}/coin-payments/coin-payment-webhook?userId=${userId}&membershipId=${membershipId}`
       })
       .then((res) => {
         //save payment
