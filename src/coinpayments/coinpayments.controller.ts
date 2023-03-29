@@ -43,4 +43,14 @@ export class CoinpaymentsController {
       queryData,
     );
   }
+
+
+  //listen to the IPN url get
+  @Get('coin-payment-webhook')
+  async listenToWebhookget() {
+    this.logger.log(
+      `${new Date()} listenToWebhook called `,
+    );
+    return `${new Date()} listenToWebhook called ~~~`
+  }
 }
