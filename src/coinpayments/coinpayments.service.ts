@@ -105,6 +105,7 @@ export class CoinpaymentsService {
     // let signature = data.digest("hex")
     console.log(hmac, "___signature")
     console.log(hmac == hash, hmac, hash)
+    
     // this.logger.log(`handleCallBackdetails ${queryData.membershipId} ${queryData.userId}`)
 
     // const { userId, membershipId } = queryData
