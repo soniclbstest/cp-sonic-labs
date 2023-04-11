@@ -52,7 +52,6 @@ export class CoinpaymentsService {
       this.logger.error(`membrtship not found ${membershipId}`);
       throw new Error(`Membership not found`);
     }
-
     return await this.client
       .createTransaction({
         currency1: 'USD',
