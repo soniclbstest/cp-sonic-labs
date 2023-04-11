@@ -41,17 +41,17 @@ export class CoinpaymentsService {
     const { amount, currency, email, userId, membershipId } =
       createCoinPaymentDTO;
     //find the user
-    // const user = await this.userRepository.findById(userId);
+    const user = await this.userRepository.findById(userId);
 
-    // if (!user) {
-    //   this.logger.error(`user not found ${userId}`);
-    //   throw new Error(`User not found`);
-    // }
-    // const membership = await this.membershipRepository.findById(membershipId);
-    // if (!membership) {
-    //   this.logger.error(`membrtship not found ${membershipId}`);
-    //   throw new Error(`Membership not found`);
-    // }
+    if (!user) {
+      this.logger.error(`user not found ${userId}`);
+      throw new Error(`User not found`);
+    }
+    const membership = await this.membershipRepository.findById(membershipId);
+    if (!membership) {
+      this.logger.error(`membrtship not found ${membershipId}`);
+      throw new Error(`Membership not found`);
+    }
 
     return await this.client
       .createTransaction({
@@ -59,9 +59,9 @@ export class CoinpaymentsService {
         currency2: currency, //BTC | ETH | LTCT
         amount: amount,
         buyer_email: "praveen@gmail.com",
-        // buyer_name: user.username,
+        buyer_name: user.username,
         custom: 'coinbureau-hub',
-        ipn_url: `https://cp-sonic-labs-production-4.up.railway.app/coin-payments/coin-payment-webhook`
+        ipn_url: `https://cp-sonic-labs-production-5.up.railway.app/coin-payments/coin-payment-webhook?userId=${userId}&membershipId=${membershipId}`
         //?userId=${userId}&membershipId=${membershipId}
         // ipn_url: `${this.configService.get<string>("COIN_PAYMENT_BASE_URL")}/coin-payments/coin-payment-webhook?userId=${userId}&membershipId=${membershipId}`
       })
@@ -70,25 +70,25 @@ export class CoinpaymentsService {
 
       .then((res) => {
         //save payment
-        // this.paymentRepository.create({
-        //   user: user,
-        //   membership: membership,
-        //   payment_id: res.txn_id,
-        //   amount: +res.amount,
-        //   payment_method: PaymentMethod.CRYPTO,
-        //   payment_type: PaymentType.YEARLY,
-        //   expire_date: '',
-        //   create_date: new Date().toString(),
-        //   status: Status.PENDING,
-        // }).then((res) => {
-        //   this.logger.log(
-        //     `payment created ${new Date()} ${user.id} ${res.payment_id} ${email}`,
-        //   );
-        // }).catch((error) => {
-        //   throw new Error(`Error when saving the payment ${error} ${userId}`)
-        // })
+        this.paymentRepository.create({
+          user: user,
+          membership: membership,
+          payment_id: res.txn_id,
+          amount: +res.amount,
+          payment_method: PaymentMethod.CRYPTO,
+          payment_type: PaymentType.YEARLY,
+          expire_date: '',
+          create_date: new Date().toString(),
+          status: Status.PENDING,
+        }).then((res) => {
+          this.logger.log(
+            `payment created ${new Date()} ${user.id} ${res.payment_id} ${email}`,
+          );
+        }).catch((error) => {
+          throw new Error(`Error when saving the payment ${error} ${userId}`)
+        })
 
-        this.logger.log(`https://cp-sonic-labs-production-4.up.railway.app/coin-payments/coin-payment-webhook`)//?userId=${userId}&membershipId=${membershipId}
+        this.logger.log(`https://cp-sonic-labs-production-5.up.railway.app/coin-payments/coin-payment-webhook`)//?userId=${userId}&membershipId=${membershipId}
         return res;
       })
       .catch((error) => {
@@ -100,7 +100,7 @@ export class CoinpaymentsService {
       });
   }
 
-  async handleCallBackdetails(callBackData: any, hash: any) {
+  async handleCallBackdetails(callBackData: any, hash: any, queryData: HandleCoinPaymentDto) {
     console.log(callBackData, "_callback_data")
     const hmac = createHmac("sha512", "12345")
     const _data = new URLSearchParams(callBackData).toString()
@@ -110,121 +110,124 @@ export class CoinpaymentsService {
     console.log(hmac, "___signature")
     console.log(signature == hash /**false */, signature, hash, "signature__hashdata")
 
-    // this.logger.log(`handleCallBackdetails ${queryData.membershipId} ${queryData.userId}`)
-    // const { userId, membershipId } = queryData
-    // this.logger.log(`IPN callback data ${callBackData}`);
+    if (signature !== hash) {
+      throw new ForbiddenException("cannot continue your request")
+    }
+    this.logger.log(`handleCallBackdetails ${queryData.membershipId} ${queryData.userId}`)
+    const { userId, membershipId } = queryData
+    this.logger.log(`IPN callback data ${callBackData}`);
 
-    // const user = await this.userRepository.findById(+userId);
+    const user = await this.userRepository.findById(+userId);
 
 
-    // if (!user) {
-    //   this.logger.error(`user not found ${userId}`);
-    //   throw new Error(`User not found`);
-    // }
-    // const payment = await this.paymentRepository.findOneByPaymentId(
-    //   callBackData.txn_id,
-    // );
-    // //check payment
-    // if (!payment) {
-    //   throw new Error(`Payment Not Found`);
-    // }
-    // const membership = await this.membershipRepository.findById(+membershipId);
-    // if (!membership) {
-    //   this.logger.error(`membrtship not found ${membershipId}`);
-    //   throw new Error(`Membership not found`);
-    // }
-    //pending
-    // if (callBackData.status === StatusNumber.PENDING) {
-    //   this.logger.log(`pending ${callBackData.status} ${StatusNumber.PENDING}`);
-    //   //update the payment status
-    //   this.paymentRepository
-    //     .updatePayment(payment, Status.PENDING)
-    //     .then((res) => {
-    //       this.logger.log(
-    //         `Payment status updated ${new Date()} ~~~ ${res.payment_id} `,
-    //       );
-    //     })
-    //     .catch((error) => {
-    //       this.logger.error(
-    //         `Payment status updating error ${new Date()} ~~~ ${callBackData.txn_id
-    //         } ~~~ ${error}`,
-    //       );
-    //     });
-    // }
-    // //funds sent
-    // if (callBackData.status === StatusNumber.FUNDSSENT) {
-    //   this.logger.log(
-    //     `fund sent ${callBackData.status} ${StatusNumber.FUNDSSENT}`,
-    //   );
-    //   //update the payment status
-    //   this.paymentRepository
-    //     .updatePayment(payment, Status.FUNDS_SENT)
-    //     .then((res) => {
-    //       this.logger.log(
-    //         `Payment status updated ${new Date()} ~~~ ${res.payment_id} `,
-    //       );
-    //     })
-    //     .catch((error) => {
-    //       this.logger.error(
-    //         `Payment status updating error ${new Date()} ~~~ ${callBackData.txn_id
-    //         } ~~~ ${error}`,
-    //       );
-    //     });
-    // }
-    // //completed
-    // if (
-    //   callBackData.status === StatusNumber.COMPLETED ||
-    //   callBackData.status === StatusNumber.COMPLETED_2
-    // ) {
-    //   this.logger.log(
-    //     `Completed ${callBackData.status} ${StatusNumber.COMPLETED}`,
-    //   );
-    //   //update the payment status
-    //   this.paymentRepository
-    //     .updatePayment(payment, Status.COMPLETED)
-    //     .then((res) => {
-    //       this.logger.log(
-    //         `Payment status updated ${new Date()} ~~~ ${res.payment_id} `,
-    //       );
-    //       //update the membership status
-    //       this.userRepository.updateUserMembership(+userId, membership).then((res) => {
-    //         this.logger.log(`user membership status updated ${userId} ${payment.id} ${membership.id}`)
-    //       })
-    //     })
-    //     .catch((error) => {
-    //       this.logger.error(
-    //         `Payment status updating error ${new Date()} ~~~ ${callBackData.txn_id
-    //         } ~~~ ${error}`,
-    //       );
-    //     });
-    // }
+    if (!user) {
+      this.logger.error(`user not found ${userId}`);
+      throw new Error(`User not found`);
+    }
+    const payment = await this.paymentRepository.findOneByPaymentId(
+      callBackData.txn_id,
+    );
+    //check payment
+    if (!payment) {
+      throw new Error(`Payment Not Found`);
+    }
+    const membership = await this.membershipRepository.findById(+membershipId);
+    if (!membership) {
+      this.logger.error(`membrtship not found ${membershipId}`);
+      throw new Error(`Membership not found`);
+    }
+    pending
+    if (callBackData.status === StatusNumber.PENDING) {
+      this.logger.log(`pending ${callBackData.status} ${StatusNumber.PENDING}`);
+      //update the payment status
+      this.paymentRepository
+        .updatePayment(payment, Status.PENDING)
+        .then((res) => {
+          this.logger.log(
+            `Payment status updated ${new Date()} ~~~ ${res.payment_id} `,
+          );
+        })
+        .catch((error) => {
+          this.logger.error(
+            `Payment status updating error ${new Date()} ~~~ ${callBackData.txn_id
+            } ~~~ ${error}`,
+          );
+        });
+    }
+    //funds sent
+    if (callBackData.status === StatusNumber.FUNDSSENT) {
+      this.logger.log(
+        `fund sent ${callBackData.status} ${StatusNumber.FUNDSSENT}`,
+      );
+      //update the payment status
+      this.paymentRepository
+        .updatePayment(payment, Status.FUNDS_SENT)
+        .then((res) => {
+          this.logger.log(
+            `Payment status updated ${new Date()} ~~~ ${res.payment_id} `,
+          );
+        })
+        .catch((error) => {
+          this.logger.error(
+            `Payment status updating error ${new Date()} ~~~ ${callBackData.txn_id
+            } ~~~ ${error}`,
+          );
+        });
+    }
+    //completed
+    if (
+      callBackData.status === StatusNumber.COMPLETED ||
+      callBackData.status === StatusNumber.COMPLETED_2
+    ) {
+      this.logger.log(
+        `Completed ${callBackData.status} ${StatusNumber.COMPLETED}`,
+      );
+      //update the payment status
+      this.paymentRepository
+        .updatePayment(payment, Status.COMPLETED)
+        .then((res) => {
+          this.logger.log(
+            `Payment status updated ${new Date()} ~~~ ${res.payment_id} `,
+          );
+          //update the membership status
+          this.userRepository.updateUserMembership(+userId, membership).then((res) => {
+            this.logger.log(`user membership status updated ${userId} ${payment.id} ${membership.id}`)
+          })
+        })
+        .catch((error) => {
+          this.logger.error(
+            `Payment status updating error ${new Date()} ~~~ ${callBackData.txn_id
+            } ~~~ ${error}`,
+          );
+        });
+    }
 
-    // //canceled
-    // if (
-    //   Math.sign(+callBackData.status) === +StatusNumber.CANCELED ||
-    //   Number.isNaN(Math.sign(+callBackData.status))
-    // ) {
-    //   this.logger.log(
-    //     `Canceled ${callBackData.status} ${StatusNumber.CANCELED}`,
-    //   );
-    //   //update the payment status
-    //   this.paymentRepository
-    //     .updatePayment(payment, Status.CANCELLED)
-    //     .then((res) => {
-    //       this.logger.log(
-    //         `Payment status updated ${new Date()} ~~~ ${res.payment_id} `,
-    //       );
-    //     })
-    //     .catch((error) => {
-    //       this.logger.error(
-    //         `Payment status updating error ${new Date()} ~~~ ${callBackData.txn_id} ~~~ ${error}`,
-    //       );
-    //     });
-    // } else {
-    //   throw new ForbiddenException ({
-    //     message: "Nothing happened",
-    //     status: 403
-    //   })
-    // };
+    //canceled
+    if (
+      Math.sign(+callBackData.status) === +StatusNumber.CANCELED ||
+      Number.isNaN(Math.sign(+callBackData.status))
+    ) {
+      this.logger.log(
+        `Canceled ${callBackData.status} ${StatusNumber.CANCELED}`,
+      );
+      //update the payment status
+      this.paymentRepository
+        .updatePayment(payment, Status.CANCELLED)
+        .then((res) => {
+          this.logger.log(
+            `Payment status updated ${new Date()} ~~~ ${res.payment_id} `,
+          );
+        })
+        .catch((error) => {
+          this.logger.error(
+            `Payment status updating error ${new Date()} ~~~ ${callBackData.txn_id} ~~~ ${error}`,
+          );
+        });
+    } else {
+      throw new ForbiddenException({
+        message: "Nothing happened",
+        status: 403
+      })
+    };
   }
 }

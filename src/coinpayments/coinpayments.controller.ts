@@ -34,7 +34,7 @@ export class CoinpaymentsController {
   @UseInterceptors(FileInterceptor('file'))
   async listenToWebhook(
     @Body() callBackData: any,
-    // @Query() queryData: HandleCoinPaymentDto,
+    @Query() queryData: HandleCoinPaymentDto,
     @Headers("hmac") hmac:any 
      ) {
     // this.logger.log(
@@ -42,7 +42,7 @@ export class CoinpaymentsController {
     // );
     return await this.coinPaymentsService.handleCallBackdetails(
       callBackData,
-      // queryData,
+      queryData,
       hmac
     );
   }
