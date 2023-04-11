@@ -206,7 +206,7 @@ export class CoinpaymentsService {
           );
         });
     } else {
-      throw new ForbiddenException({
+      throw new ForbiddenException ({
         message: "Nothing happened",
         status: 403
       })
