@@ -16,7 +16,7 @@ import {
 import { UserRepository } from 'src/common/modules/user/user.repository';
 import { MembershipRepository } from 'src/common/modules/membership/membership.repository';
 import { HandleCoinPaymentDto } from './dto/handleCoinPayment.dto';
-import crypto from "crypto"
+import { createHmac } from "crypto"
 @Injectable()
 export class CoinpaymentsService {
   constructor(
@@ -104,7 +104,7 @@ export class CoinpaymentsService {
     // this.logger.log(`IPN callback data ${callBackData}`);
     console.log(callBackData, "callback_data")
     // const user = await this.userRepository.findById(+userId);
-    const hmac = crypto.createHmac("sha512", "12345")
+    const hmac = createHmac("sha512", "12345")
     let data = hmac.update(callBackData)
     let signature = data.digest("hex")
     console.log(signature, "___signature")
