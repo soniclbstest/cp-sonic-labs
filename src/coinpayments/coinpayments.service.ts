@@ -97,15 +97,15 @@ export class CoinpaymentsService {
       });
   }
 
-  async handleCallBackdetails(callBackData: any, hash: any) {//queryData: HandleCoinPaymentDto,
+  async handleCallBackdetails(callBackData: any /**IPN Data */, hash: any /**  the hmac comes from  IPN*/) {
+    const hmac = createHmac("sha512", "12345")
+    const _data = new URLSearchParams(callBackData).toString()
+    let data = hmac.update(_data)
+    let signature = data.digest("hex")
     console.log(hash, "___hash")
-    console.log(callBackData, "callback_data")
-    const hmac = createHmac("sha512", "12345").update(JSON.stringify(callBackData)).digest("hex")
-    // let data = hmac.update(callBackData)
-    // let signature = data.digest("hex")
     console.log(hmac, "___signature")
-    console.log(hmac == hash, hmac, hash)
-    
+    console.log(hmac == hash /**false */, signature, hash)
+
     // this.logger.log(`handleCallBackdetails ${queryData.membershipId} ${queryData.userId}`)
 
     // const { userId, membershipId } = queryData
