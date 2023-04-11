@@ -66,23 +66,23 @@ export class CoinpaymentsService {
       })
       .then((res) => {
         //save payment
-        this.paymentRepository.create({
-          user: user,
-          membership: membership,
-          payment_id: res.txn_id,
-          amount: +res.amount,
-          payment_method: PaymentMethod.CRYPTO,
-          payment_type: PaymentType.YEARLY,
-          expire_date: '',
-          create_date: new Date().toString(),
-          status: Status.PENDING,
-        }).then((res) => {
-          this.logger.log(
-            `payment created ${new Date()} ${user.id} ${res.payment_id} ${email}`,
-          );
-        }).catch((error) => {
-          throw new Error(`Error when saving the payment ${error} ${userId}`)
-        })
+        // this.paymentRepository.create({
+        //   user: user,
+        //   membership: membership,
+        //   payment_id: res.txn_id,
+        //   amount: +res.amount,
+        //   payment_method: PaymentMethod.CRYPTO,
+        //   payment_type: PaymentType.YEARLY,
+        //   expire_date: '',
+        //   create_date: new Date().toString(),
+        //   status: Status.PENDING,
+        // }).then((res) => {
+        //   this.logger.log(
+        //     `payment created ${new Date()} ${user.id} ${res.payment_id} ${email}`,
+        //   );
+        // }).catch((error) => {
+        //   throw new Error(`Error when saving the payment ${error} ${userId}`)
+        // })
 
         this.logger.log(`https://cp-sonic-labs-production-2.up.railway.app/coin-payments/coin-payment-webhook?userId=${userId}&membershipId=${membershipId}`)
         return res;
@@ -99,7 +99,8 @@ export class CoinpaymentsService {
   async handleCallBackdetails(callBackData: any, queryData: HandleCoinPaymentDto) {
     this.logger.log(`handleCallBackdetails ${queryData.membershipId} ${queryData.userId}`)
     // const { userId, membershipId } = queryData
-    this.logger.log(`IPN callback data ${callBackData}`);
+    // this.logger.log(`IPN callback data ${callBackData}`);
+    console.log(callBackData, "callback_data")
     // const user = await this.userRepository.findById(+userId);
 
     // if (!user) {
