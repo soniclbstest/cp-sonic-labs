@@ -65,6 +65,9 @@ export class CoinpaymentsService {
         //?userId=${userId}&membershipId=${membershipId}
         // ipn_url: `${this.configService.get<string>("COIN_PAYMENT_BASE_URL")}/coin-payments/coin-payment-webhook?userId=${userId}&membershipId=${membershipId}`
       })
+      //false f87adbdcbe5126cb005d798c52e80ac03ff2c72d8a90a96d51722d63bf90c2603b2727f36a5f6a45fbc3d5521220f5d795c1f5f72dc156287acfb6901888e113 
+      //      f87adbdcbe5126cb005d798c52e80ac03ff2c72d8a90a96d51722d63bf90c2603b2727f36a5f6a45fbc3d5521220f5d795c1f5f72dc156287acfb6901888e113
+
       .then((res) => {
         //save payment
         // this.paymentRepository.create({
@@ -105,10 +108,9 @@ export class CoinpaymentsService {
     let signature = data.digest("hex")
     console.log(hash, "___hash")
     console.log(hmac, "___signature")
-    console.log(hmac == hash /**false */, signature, hash)
+    console.log(signature == hash /**false */, signature, hash, "signature__hashdata")
 
     // this.logger.log(`handleCallBackdetails ${queryData.membershipId} ${queryData.userId}`)
-
     // const { userId, membershipId } = queryData
     // this.logger.log(`IPN callback data ${callBackData}`);
 
