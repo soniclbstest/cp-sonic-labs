@@ -98,16 +98,20 @@ export class CoinpaymentsService {
   }
 
   async handleCallBackdetails(callBackData: any, hash: any) {//queryData: HandleCoinPaymentDto,
-    // this.logger.log(`handleCallBackdetails ${queryData.membershipId} ${queryData.userId}`)
     console.log(hash, "___hash")
+    console.log(callBackData, "callback_data")
+    const hmac = createHmac("sha512", "12345").update(callBackData).digest("hex")
+    // let data = hmac.update(callBackData)
+    // let signature = data.digest("hex")
+    console.log(hmac, "___signature")
+    console.log(hmac == hash, hmac, hash)
+    // this.logger.log(`handleCallBackdetails ${queryData.membershipId} ${queryData.userId}`)
+
     // const { userId, membershipId } = queryData
     // this.logger.log(`IPN callback data ${callBackData}`);
-    console.log(callBackData, "callback_data")
+
     // const user = await this.userRepository.findById(+userId);
-    const hmac = createHmac("sha512", "12345")
-    let data = hmac.update(callBackData)
-    let signature = data.digest("hex")
-    console.log(signature, "___signature")
+
 
     // if (!user) {
     //   this.logger.error(`user not found ${userId}`);
