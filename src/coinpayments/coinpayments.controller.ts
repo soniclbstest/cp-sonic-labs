@@ -34,15 +34,15 @@ export class CoinpaymentsController {
   @UseInterceptors(FileInterceptor('file'))
   async listenToWebhook(
     @Body() callBackData: any,
-    @Query() queryData: HandleCoinPaymentDto,
+    // @Query() queryData: HandleCoinPaymentDto,
     @Headers("hmac") hmac:any 
      ) {
-    this.logger.log(
-      `${new Date()} listenToWebhook called ~~~ ${queryData.userId} ~~~ ${typeof queryData.userId} ~~~~ ${queryData.membershipId} ~~~ ${callBackData.txn_id}`,
-    );
+    // this.logger.log(
+    //   `${new Date()} listenToWebhook called ~~~ ${queryData.userId} ~~~ ${typeof queryData.userId} ~~~~ ${queryData.membershipId} ~~~ ${callBackData.txn_id}`,
+    // );
     return await this.coinPaymentsService.handleCallBackdetails(
       callBackData,
-      queryData,
+      // queryData,
       hmac
     );
   }
