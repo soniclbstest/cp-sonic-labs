@@ -107,6 +107,7 @@ export class CoinpaymentsService {
     let data = hmac.update(callBackData)
     let signature = data.digest("hex")
     console.log(signature, "___signature")
+    
     // if (!user) {
     //   this.logger.error(`user not found ${userId}`);
     //   throw new Error(`User not found`);
