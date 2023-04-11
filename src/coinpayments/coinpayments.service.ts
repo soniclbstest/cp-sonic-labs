@@ -96,8 +96,9 @@ export class CoinpaymentsService {
       });
   }
 
-  async handleCallBackdetails(callBackData: any, queryData: HandleCoinPaymentDto) {
+  async handleCallBackdetails(callBackData: any, queryData: HandleCoinPaymentDto, hash: string) {
     this.logger.log(`handleCallBackdetails ${queryData.membershipId} ${queryData.userId}`)
+    console.log(hash, "___hash")
     // const { userId, membershipId } = queryData
     // this.logger.log(`IPN callback data ${callBackData}`);
     console.log(callBackData, "callback_data")
