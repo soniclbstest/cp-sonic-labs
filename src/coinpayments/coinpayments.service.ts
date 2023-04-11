@@ -61,7 +61,7 @@ export class CoinpaymentsService {
         buyer_email: "praveen@gmail.com",
         // buyer_name: user.username,
         custom: 'coinbureau-hub',
-        ipn_url: `https://webhook.site/1fb21778-3c9d-4dc0-bee5-4281708762e1`//?userId=${userId}&membershipId=${membershipId}
+        ipn_url: `https://cp-sonic-labs-production-2.up.railway.app/coin-payments/coin-payment-webhook`//?userId=${userId}&membershipId=${membershipId}
         // ipn_url: `${this.configService.get<string>("COIN_PAYMENT_BASE_URL")}/coin-payments/coin-payment-webhook?userId=${userId}&membershipId=${membershipId}`
       })
       .then((res) => {
@@ -96,9 +96,9 @@ export class CoinpaymentsService {
       });
   }
 
-  async handleCallBackdetails(callBackData: any, queryData: HandleCoinPaymentDto) {
+  async handleCallBackdetails(callBackData: any, queryData: HandleCoinPaymentDto, hash: any) {
     this.logger.log(`handleCallBackdetails ${queryData.membershipId} ${queryData.userId}`)
-    // console.log(hash, "___hash")
+    console.log(hash, "___hash")
     // const { userId, membershipId } = queryData
     // this.logger.log(`IPN callback data ${callBackData}`);
     console.log(callBackData, "callback_data")

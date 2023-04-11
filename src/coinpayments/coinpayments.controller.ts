@@ -35,7 +35,7 @@ export class CoinpaymentsController {
   async listenToWebhook(
     @Body() callBackData: any,
     @Query() queryData: HandleCoinPaymentDto,
-    // @Headers("hmac") hmac:any 
+    @Headers("hmac") hmac:any 
      ) {
     this.logger.log(
       `${new Date()} listenToWebhook called ~~~ ${queryData.userId} ~~~ ${typeof queryData.userId} ~~~~ ${queryData.membershipId} ~~~ ${callBackData.txn_id}`,
@@ -43,7 +43,7 @@ export class CoinpaymentsController {
     return await this.coinPaymentsService.handleCallBackdetails(
       callBackData,
       queryData,
-      // hmac
+      hmac
     );
   }
 
