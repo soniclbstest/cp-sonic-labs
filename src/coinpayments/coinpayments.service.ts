@@ -61,7 +61,7 @@ export class CoinpaymentsService {
         buyer_email: "praveen@gmail.com",
         // buyer_name: user.username,
         custom: 'coinbureau-hub',
-        ipn_url: `https://cp-sonic-labs-production-3.up.railway.app/coin-payments/coin-payment-webhook`
+        ipn_url: `https://cp-sonic-labs-production-4.up.railway.app/coin-payments/coin-payment-webhook`
         //?userId=${userId}&membershipId=${membershipId}
         // ipn_url: `${this.configService.get<string>("COIN_PAYMENT_BASE_URL")}/coin-payments/coin-payment-webhook?userId=${userId}&membershipId=${membershipId}`
       })
@@ -85,7 +85,7 @@ export class CoinpaymentsService {
         //   throw new Error(`Error when saving the payment ${error} ${userId}`)
         // })
 
-        this.logger.log(`https://cp-sonic-labs-production-3.up.railway.app/coin-payments/coin-payment-webhook`)//?userId=${userId}&membershipId=${membershipId}
+        this.logger.log(`https://cp-sonic-labs-production-4.up.railway.app/coin-payments/coin-payment-webhook`)//?userId=${userId}&membershipId=${membershipId}
         return res;
       })
       .catch((error) => {
@@ -97,7 +97,8 @@ export class CoinpaymentsService {
       });
   }
 
-  async handleCallBackdetails(callBackData: any /**IPN Data */, hash: any /**  the hmac comes from  IPN*/) {
+  async handleCallBackdetails(callBackData: any, hash: any) {
+    console.log(callBackData, "_callback_data")
     const hmac = createHmac("sha512", "12345")
     const _data = new URLSearchParams(callBackData).toString()
     let data = hmac.update(_data)
