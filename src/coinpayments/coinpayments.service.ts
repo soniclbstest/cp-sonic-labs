@@ -41,25 +41,25 @@ export class CoinpaymentsService {
     const { amount, currency, email, userId, membershipId } =
       createCoinPaymentDTO;
     //find the user
-    const user = await this.userRepository.findById(userId);
+    // const user = await this.userRepository.findById(userId);
 
-    if (!user) {
-      this.logger.error(`user not found ${userId}`);
-      throw new Error(`User not found`);
-    }
-    const membership = await this.membershipRepository.findById(membershipId);
-    if (!membership) {
-      this.logger.error(`membrtship not found ${membershipId}`);
-      throw new Error(`Membership not found`);
-    }
+    // if (!user) {
+    //   this.logger.error(`user not found ${userId}`);
+    //   throw new Error(`User not found`);
+    // }
+    // const membership = await this.membershipRepository.findById(membershipId);
+    // if (!membership) {
+    //   this.logger.error(`membrtship not found ${membershipId}`);
+    //   throw new Error(`Membership not found`);
+    // }
 
     return await this.client
       .createTransaction({
         currency1: 'USD',
         currency2: currency, //BTC | ETH | LTCT
         amount: amount,
-        buyer_email: user.email,
-        buyer_name: user.username,
+        buyer_email: "praveen@gmail.com",
+        // buyer_name: user.username,
         custom: 'coinbureau-hub',
         ipn_url: `https://cp-sonic-labs-production-2.up.railway.app/coin-payments/coin-payment-webhook?userId=${userId}&membershipId=${membershipId}`
         // ipn_url: `${this.configService.get<string>("COIN_PAYMENT_BASE_URL")}/coin-payments/coin-payment-webhook?userId=${userId}&membershipId=${membershipId}`
