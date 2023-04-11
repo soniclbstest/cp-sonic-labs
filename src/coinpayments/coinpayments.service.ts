@@ -98,118 +98,118 @@ export class CoinpaymentsService {
 
   async handleCallBackdetails(callBackData: any, queryData: HandleCoinPaymentDto) {
     this.logger.log(`handleCallBackdetails ${queryData.membershipId} ${queryData.userId}`)
-    const { userId, membershipId } = queryData
+    // const { userId, membershipId } = queryData
     this.logger.log(`IPN callback data ${callBackData}`);
-    const user = await this.userRepository.findById(+userId);
+    // const user = await this.userRepository.findById(+userId);
 
-    if (!user) {
-      this.logger.error(`user not found ${userId}`);
-      throw new Error(`User not found`);
-    }
-    const payment = await this.paymentRepository.findOneByPaymentId(
-      callBackData.txn_id,
-    );
-    //check payment
-    if (!payment) {
-      throw new Error(`Payment Not Found`);
-    }
-    const membership = await this.membershipRepository.findById(+membershipId);
-    if (!membership) {
-      this.logger.error(`membrtship not found ${membershipId}`);
-      throw new Error(`Membership not found`);
-    }
+    // if (!user) {
+    //   this.logger.error(`user not found ${userId}`);
+    //   throw new Error(`User not found`);
+    // }
+    // const payment = await this.paymentRepository.findOneByPaymentId(
+    //   callBackData.txn_id,
+    // );
+    // //check payment
+    // if (!payment) {
+    //   throw new Error(`Payment Not Found`);
+    // }
+    // const membership = await this.membershipRepository.findById(+membershipId);
+    // if (!membership) {
+    //   this.logger.error(`membrtship not found ${membershipId}`);
+    //   throw new Error(`Membership not found`);
+    // }
     //pending
-    if (callBackData.status === StatusNumber.PENDING) {
-      this.logger.log(`pending ${callBackData.status} ${StatusNumber.PENDING}`);
-      //update the payment status
-      this.paymentRepository
-        .updatePayment(payment, Status.PENDING)
-        .then((res) => {
-          this.logger.log(
-            `Payment status updated ${new Date()} ~~~ ${res.payment_id} `,
-          );
-        })
-        .catch((error) => {
-          this.logger.error(
-            `Payment status updating error ${new Date()} ~~~ ${callBackData.txn_id
-            } ~~~ ${error}`,
-          );
-        });
-    }
-    //funds sent
-    if (callBackData.status === StatusNumber.FUNDSSENT) {
-      this.logger.log(
-        `fund sent ${callBackData.status} ${StatusNumber.FUNDSSENT}`,
-      );
-      //update the payment status
-      this.paymentRepository
-        .updatePayment(payment, Status.FUNDS_SENT)
-        .then((res) => {
-          this.logger.log(
-            `Payment status updated ${new Date()} ~~~ ${res.payment_id} `,
-          );
-        })
-        .catch((error) => {
-          this.logger.error(
-            `Payment status updating error ${new Date()} ~~~ ${callBackData.txn_id
-            } ~~~ ${error}`,
-          );
-        });
-    }
-    //completed
-    if (
-      callBackData.status === StatusNumber.COMPLETED ||
-      callBackData.status === StatusNumber.COMPLETED_2
-    ) {
-      this.logger.log(
-        `Completed ${callBackData.status} ${StatusNumber.COMPLETED}`,
-      );
-      //update the payment status
-      this.paymentRepository
-        .updatePayment(payment, Status.COMPLETED)
-        .then((res) => {
-          this.logger.log(
-            `Payment status updated ${new Date()} ~~~ ${res.payment_id} `,
-          );
-          //update the membership status
-          this.userRepository.updateUserMembership(+userId, membership).then((res) => {
-            this.logger.log(`user membership status updated ${userId} ${payment.id} ${membership.id}`)
-          })
-        })
-        .catch((error) => {
-          this.logger.error(
-            `Payment status updating error ${new Date()} ~~~ ${callBackData.txn_id
-            } ~~~ ${error}`,
-          );
-        });
-    }
+    // if (callBackData.status === StatusNumber.PENDING) {
+    //   this.logger.log(`pending ${callBackData.status} ${StatusNumber.PENDING}`);
+    //   //update the payment status
+    //   this.paymentRepository
+    //     .updatePayment(payment, Status.PENDING)
+    //     .then((res) => {
+    //       this.logger.log(
+    //         `Payment status updated ${new Date()} ~~~ ${res.payment_id} `,
+    //       );
+    //     })
+    //     .catch((error) => {
+    //       this.logger.error(
+    //         `Payment status updating error ${new Date()} ~~~ ${callBackData.txn_id
+    //         } ~~~ ${error}`,
+    //       );
+    //     });
+    // }
+    // //funds sent
+    // if (callBackData.status === StatusNumber.FUNDSSENT) {
+    //   this.logger.log(
+    //     `fund sent ${callBackData.status} ${StatusNumber.FUNDSSENT}`,
+    //   );
+    //   //update the payment status
+    //   this.paymentRepository
+    //     .updatePayment(payment, Status.FUNDS_SENT)
+    //     .then((res) => {
+    //       this.logger.log(
+    //         `Payment status updated ${new Date()} ~~~ ${res.payment_id} `,
+    //       );
+    //     })
+    //     .catch((error) => {
+    //       this.logger.error(
+    //         `Payment status updating error ${new Date()} ~~~ ${callBackData.txn_id
+    //         } ~~~ ${error}`,
+    //       );
+    //     });
+    // }
+    // //completed
+    // if (
+    //   callBackData.status === StatusNumber.COMPLETED ||
+    //   callBackData.status === StatusNumber.COMPLETED_2
+    // ) {
+    //   this.logger.log(
+    //     `Completed ${callBackData.status} ${StatusNumber.COMPLETED}`,
+    //   );
+    //   //update the payment status
+    //   this.paymentRepository
+    //     .updatePayment(payment, Status.COMPLETED)
+    //     .then((res) => {
+    //       this.logger.log(
+    //         `Payment status updated ${new Date()} ~~~ ${res.payment_id} `,
+    //       );
+    //       //update the membership status
+    //       this.userRepository.updateUserMembership(+userId, membership).then((res) => {
+    //         this.logger.log(`user membership status updated ${userId} ${payment.id} ${membership.id}`)
+    //       })
+    //     })
+    //     .catch((error) => {
+    //       this.logger.error(
+    //         `Payment status updating error ${new Date()} ~~~ ${callBackData.txn_id
+    //         } ~~~ ${error}`,
+    //       );
+    //     });
+    // }
 
-    //canceled
-    if (
-      Math.sign(+callBackData.status) === +StatusNumber.CANCELED ||
-      Number.isNaN(Math.sign(+callBackData.status))
-    ) {
-      this.logger.log(
-        `Canceled ${callBackData.status} ${StatusNumber.CANCELED}`,
-      );
-      //update the payment status
-      this.paymentRepository
-        .updatePayment(payment, Status.CANCELLED)
-        .then((res) => {
-          this.logger.log(
-            `Payment status updated ${new Date()} ~~~ ${res.payment_id} `,
-          );
-        })
-        .catch((error) => {
-          this.logger.error(
-            `Payment status updating error ${new Date()} ~~~ ${callBackData.txn_id} ~~~ ${error}`,
-          );
-        });
-    } else {
-      throw new ForbiddenException ({
-        message: "Nothing happened",
-        status: 403
-      })
-    };
+    // //canceled
+    // if (
+    //   Math.sign(+callBackData.status) === +StatusNumber.CANCELED ||
+    //   Number.isNaN(Math.sign(+callBackData.status))
+    // ) {
+    //   this.logger.log(
+    //     `Canceled ${callBackData.status} ${StatusNumber.CANCELED}`,
+    //   );
+    //   //update the payment status
+    //   this.paymentRepository
+    //     .updatePayment(payment, Status.CANCELLED)
+    //     .then((res) => {
+    //       this.logger.log(
+    //         `Payment status updated ${new Date()} ~~~ ${res.payment_id} `,
+    //       );
+    //     })
+    //     .catch((error) => {
+    //       this.logger.error(
+    //         `Payment status updating error ${new Date()} ~~~ ${callBackData.txn_id} ~~~ ${error}`,
+    //       );
+    //     });
+    // } else {
+    //   throw new ForbiddenException ({
+    //     message: "Nothing happened",
+    //     status: 403
+    //   })
+    // };
   }
 }
