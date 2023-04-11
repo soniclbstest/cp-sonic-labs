@@ -100,7 +100,7 @@ export class CoinpaymentsService {
   async handleCallBackdetails(callBackData: any, hash: any) {//queryData: HandleCoinPaymentDto,
     console.log(hash, "___hash")
     console.log(callBackData, "callback_data")
-    const hmac = createHmac("sha512", "12345").update(callBackData).digest("hex")
+    const hmac = createHmac("sha512", "12345").update(JSON.stringify(callBackData)).digest("hex")
     // let data = hmac.update(callBackData)
     // let signature = data.digest("hex")
     console.log(hmac, "___signature")
