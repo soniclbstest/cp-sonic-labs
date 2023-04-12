@@ -41,6 +41,6 @@ export class Payment {
   @Column()
   create_date: string;
 
-  @Column({ default: Status.PENDING })
+  @Column({ type: 'enum', enum: Status, default: Status.PENDING })
   status: Status;
 }
