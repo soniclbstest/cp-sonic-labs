@@ -136,7 +136,6 @@ export class CoinpaymentsService {
       this.logger.error(`membrtship not found ${membershipId}`);
       throw new Error(`Membership not found`);
     }
-    pending
     if (callBackData.status === StatusNumber.PENDING) {
       this.logger.log(`pending ${callBackData.status} ${StatusNumber.PENDING}`);
       //update the payment status
