@@ -110,6 +110,7 @@ export class CoinpaymentsService {
     console.log(signature == hash /**false */, signature, hash, "signature__hashdata")
 
     if (signature !== hash) {
+      console.log("cannot continue your request")
       throw new ForbiddenException("cannot continue your request")
     }
     this.logger.log(`handleCallBackdetails ${queryData.membershipId} ${queryData.userId}`)
