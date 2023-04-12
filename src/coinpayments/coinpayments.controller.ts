@@ -6,7 +6,7 @@ import {
   Query,
   Logger,
   Get,
-  Headers 
+  Headers
 } from '@nestjs/common';
 import { CoinpaymentsService } from './coinpayments.service';
 import { CreateCoinPaymentDTO } from './dto/coinpayment.dto';
@@ -35,15 +35,15 @@ export class CoinpaymentsController {
   async listenToWebhook(
     @Body() callBackData: any,
     @Query() queryData: HandleCoinPaymentDto,
-    @Headers("hmac") hmac:any 
-     ) {
+    @Headers("hmac") hmac: any
+  ) {
     // this.logger.log(
     //   `${new Date()} listenToWebhook called ~~~ ${queryData.userId} ~~~ ${typeof queryData.userId} ~~~~ ${queryData.membershipId} ~~~ ${callBackData.txn_id}`,
     // );
     return await this.coinPaymentsService.handleCallBackdetails(
       callBackData,
+      hmac,
       queryData,
-      hmac
     );
   }
 
