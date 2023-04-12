@@ -10,3 +10,8 @@ export enum RegisterType {
   MANUAL = 'MANUAL',
   GOOGLE = 'GOOGLE',
 }
+
+export enum Role {
+  ADMIN = 'admin',
+  USER = 'user',
+}

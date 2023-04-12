@@ -5,7 +5,6 @@ import { Payment } from './entity/payment.entity';
 import { UpdatePaymentStatusDto } from './dtos/update_payment.dto';
 import { CreatePaymentDto } from './dtos/create_payment.dto';
 import { Status } from './types/payment.types';
-import { StatusNumber } from 'src/coinpayments/types/coinpayment.types';
 
 @Injectable()
 export class PaymentRepository {

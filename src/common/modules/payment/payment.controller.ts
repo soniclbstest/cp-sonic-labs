@@ -4,7 +4,7 @@ import { PaymentService } from './payment.service';
 
 @Controller('api/payment')
 export class PaymentController {
-  constructor(private readonly paymentService: PaymentService) { }
+  constructor(private readonly paymentService: PaymentService) {}
   @Post()
   create(@Body() createPaymentDto: CreatePaymentDto) {
     return this.paymentService.create(createPaymentDto);
@@ -12,11 +12,6 @@ export class PaymentController {
   @Get(':id')
   findById(@Param('id') id: string) {
     return this.paymentService.findById(+id);
-  }
-  @Get('payment/:id')
-  findByPaymentId(@Param("id") id: string) {
-    console.log(id)
-    return this.paymentService.findOneByPaymentId(id)
   }
   @Get()
   find() {

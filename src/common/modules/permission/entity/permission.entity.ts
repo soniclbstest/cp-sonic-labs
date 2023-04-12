@@ -1,11 +1,5 @@
-import { Membership } from '../../membership/entity/membership.entity';
-import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  ManyToMany,
-  JoinTable,
-} from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { PermissionMembership } from '../../permission_membership/entity/permission_membership.entity';
 
 @Entity({ name: 'permissions' })
 export class Permission {
@@ -15,9 +9,11 @@ export class Permission {
   @Column()
   description: string;
 
-  @ManyToMany(() => Membership, (membership) => membership.permissions)
-  @JoinTable()
-  memberships: Membership[];
+  @OneToMany(
+    () => PermissionMembership,
+    (permissionMembership) => permissionMembership.permission,
+  )
+  permissionMemberships: PermissionMembership[];
 
   @Column({ default: true })
   status: boolean;

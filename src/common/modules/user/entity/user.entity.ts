@@ -7,6 +7,7 @@ import {
   ManyToOne,
   JoinTable,
   OneToMany,
+  JoinColumn,
 } from 'typeorm';
 import { RegisterType, Status } from '../types/user.types';
 import { Payment } from '../../payment/entity/payment.entity';
@@ -26,16 +27,19 @@ export class User {
   @Column()
   last_name: string;
 
-  @Column()
+  @Column({ unique: true })
   email: string;
 
-  @Column()
+  @Column({ nullable: true, unique: true })
+  pending_email: string;
+
+  @Column({ nullable: true })
   password: string;
 
   @Column({ default: true })
   isAgreeToTermsAndConditions: boolean;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, unique: true })
   username: string;
 
   @Column({ nullable: true })
@@ -56,8 +60,12 @@ export class User {
   @Column({ nullable: true })
   country: string;
 
-  @Column({ nullable: true })
-  image_url: string;
+  // @Column({
+  //   nullable: true,
+  //   default:
+  //     'https://cb-hub-test.s3.us-east-2.amazonaws.com/dp_uploads/default_dp',
+  // })
+  // image_url: string;
 
   @Column({ default: false })
   is_subscribed_telegram: boolean;
@@ -66,13 +74,19 @@ export class User {
   telegram_username: string;
 
   @Column({ default: false })
-  is_verifed: boolean;
+  is_verified: boolean;
 
-  @Column()
-  verify_code: number;
+  @Column({ default: false })
+  is_verified_pending_email: boolean;
+
+  @Column({ nullable: true })
+  verification_code: number;
 
   @Column({ type: 'enum', enum: RegisterType, default: RegisterType.MANUAL })
   register_type: RegisterType;
+
+  @Column({ nullable: true })
+  google_access_token: string;
 
   @Column({ nullable: true })
   stripe_customer_id: string;
@@ -91,6 +105,9 @@ export class User {
 
   @Column({ nullable: true })
   paypal_default_payment_method: string;
+
+  @Column({ nullable: true })
+  paypal_subscription_email: string;
 
   @Column({ type: 'enum', enum: Status, default: Status.PENDING })
   status: Status;

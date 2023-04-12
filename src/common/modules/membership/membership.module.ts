@@ -7,12 +7,20 @@ import { Membership } from './entity/membership.entity';
 import { MembershipController } from './membership.controller';
 import { MembershipRepository } from './membership.repository';
 import { MembershipService } from './membership.service';
+import { PermissionMembership } from '../permission_membership/entity/permission_membership.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Membership, User, Permission, Payment])],
+  imports: [
+    TypeOrmModule.forFeature([
+      Membership,
+      User,
+      Permission,
+      Payment,
+      PermissionMembership,
+    ]),
+  ],
   controllers: [MembershipController],
   providers: [MembershipService, MembershipRepository],
-  exports: [MembershipRepository,MembershipService],
-
+  exports: [MembershipRepository, MembershipService],
 })
 export class MembershipModule {}

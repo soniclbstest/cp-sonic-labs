@@ -9,7 +9,7 @@ export class MembershipRepository {
   constructor(
     @InjectRepository(Membership)
     private membershipRepository: Repository<Membership>,
-  ) { }
+  ) {}
 
   async createMembership(
     createMembershipDto: CreateMembershipDto,
@@ -25,7 +25,7 @@ export class MembershipRepository {
       console.log(newMembership);
       return this.membershipRepository.save(newMembership);
     } catch (error) {
-      console.log(error)
+      console.log(error);
       throw new Error('Method not implemented.');
     }
   }
@@ -41,10 +41,10 @@ export class MembershipRepository {
   findById(id: number): Promise<Membership> {
     try {
       return this.membershipRepository.findOneBy({
-        id: id,
+        id: +id,
       });
     } catch (error) {
-      throw new Error('Method not implemented.');
+      throw new Error('Method not implemented. findById-membership');
     }
   }
 }

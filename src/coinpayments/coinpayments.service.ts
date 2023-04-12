@@ -13,7 +13,7 @@ import {
   PaymentType,
   Status,
 } from 'src/common/modules/payment/types/payment.types';
-import { UserRepository } from 'src/common/modules/user/user.repository';
+import { UserRepository } from '../common/modules/user/repository/user.repository';
 import { MembershipRepository } from 'src/common/modules/membership/membership.repository';
 import { HandleCoinPaymentDto } from './dto/handleCoinPayment.dto';
 import { createHmac } from "crypto"
